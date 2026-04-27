@@ -1,7 +1,7 @@
 {
   "name": "nodalum-langgraph-demo",
   "version": "1.0.0",
-  "description": "LangGraph legal AI pipeline with deterministic verifier — Nodalum demo",
+  "description": "LangGraph legal AI pipeline with deterministic verifier \u2014 Nodalum demo",
   "main": "dist/run.js",
   "scripts": {
     "start": "ts-node src/run.ts",
@@ -13,6 +13,7 @@
     "@langchain/core": "^0.3.26",
     "@langchain/langgraph": "^0.2.36",
     "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -26,7 +27,9 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ],
     "testTimeout": 30000
   }
 }
