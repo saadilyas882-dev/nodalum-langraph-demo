@@ -1,14 +1,15 @@
 import { ChatAnthropic } from "@langchain/anthropic";
 import { randomUUID } from "crypto";
 import { PipelineState } from "../state";
-import { IssueMapSchema, LegalArtifact, AuditEntry, CaseFileMap } from "../artifacts";
+import { IssueMapSchema, IssueMap, LegalArtifact, AuditEntry, CaseFileMap } from "../artifacts";
 
 const llm = new ChatAnthropic({
   model: "claude-sonnet-4-5",
   maxTokens: 1024,
 });
 
-const structuredLlm = llm.withStructuredOutput(IssueMapSchema, {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const structuredLlm = llm.withStructuredOutput(IssueMapSchema as any, {
   name: "extract_issue_map",
 });
 
@@ -37,7 +38,7 @@ export async function analysisNode(
 
   const caseFile = caseFileArtifact.content as CaseFileMap;
 
-  const content = await structuredLlm.invoke([
+  const content = (await structuredLlm.invoke([
     {
       role: "system",
       content:
@@ -53,7 +54,7 @@ export async function analysisNode(
         `Identify legal issues for matter ID "${state.matterId}".\n\n` +
         `Case File:\n${JSON.stringify(caseFile, null, 2)}`,
     },
-  ]);
+  ])) as IssueMap;
 
   const artifact: LegalArtifact = {
     artifactId,

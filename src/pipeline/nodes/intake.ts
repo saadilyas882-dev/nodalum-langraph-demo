@@ -1,14 +1,15 @@
 import { ChatAnthropic } from "@langchain/anthropic";
 import { randomUUID } from "crypto";
 import { PipelineState } from "../state";
-import { CaseFileMapSchema, LegalArtifact, AuditEntry } from "../artifacts";
+import { CaseFileMapSchema, CaseFileMap, LegalArtifact, AuditEntry } from "../artifacts";
 
 const llm = new ChatAnthropic({
   model: "claude-sonnet-4-5",
   maxTokens: 1024,
 });
 
-const structuredLlm = llm.withStructuredOutput(CaseFileMapSchema, {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const structuredLlm = llm.withStructuredOutput(CaseFileMapSchema as any, {
   name: "extract_case_file_map",
 });
 
@@ -17,7 +18,7 @@ export async function intakeNode(
 ): Promise<Partial<PipelineState>> {
   const artifactId = randomUUID();
 
-  const content = await structuredLlm.invoke([
+  const content = (await structuredLlm.invoke([
     {
       role: "system",
       content:
@@ -31,7 +32,7 @@ export async function intakeNode(
         `Extract the case file map for matter ID "${state.matterId}".\n\n` +
         `Case text:\n${state.rawInput}`,
     },
-  ]);
+  ])) as CaseFileMap;
 
   const artifact: LegalArtifact = {
     artifactId,

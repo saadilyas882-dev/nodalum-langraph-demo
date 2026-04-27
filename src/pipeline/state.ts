@@ -14,9 +14,15 @@ export const PipelineAnnotation = Annotation.Root({
   tenantId:    Annotation<string>,
   rawInput:    Annotation<string>,
 
-  // Append-only — nodes push new artifacts; they are never overwritten
+  // Artifacts — append by default; verifier replaces the whole array
+  // to update verification flags on existing entries.
   artifacts:  Annotation<LegalArtifact[]>({
-    reducer:  appendReducer,
+    reducer:  (current, update) =>
+      // If update contains the same artifactIds as current, it's a full replace (verifier).
+      // Otherwise append (intake/analysis adding new artifacts).
+      update.length > 0 && update.some((u) => current.some((c) => c.artifactId === u.artifactId))
+        ? update
+        : [...current, ...update],
     default:  () => [],
   }),
 
